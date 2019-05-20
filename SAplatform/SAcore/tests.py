@@ -4,11 +4,13 @@ from .views import *
 from rest_framework.test import APIRequestFactory
 import json
 from . import models
+from django.contrib.sessions.middleware import SessionMiddleware
 
 # Create your tests here.
 
 def generateUser():
-    u=User.objects.create(username="test",password="test",Type="U")
+    u=User.objects.create_user(username="test",password="test")
+    u.save()
     
 def generateAuthor():
     for i in range(1,10):
@@ -48,9 +50,8 @@ def login_test_user():
         generateUser()
     data={"username":"test","password":"test"}
     factory=APIRequestFactory()
-    t_response=AuthView.as_view()(factory.post('login/',data,format='json'))
-    token=json.loads(t_response.content)['token']
-    return token
+    AuthView.as_view()(factory.post('login/',data,format='json'))
+    
 
 def login_test_author():
     generateAuthor()
@@ -89,32 +90,41 @@ class TestAuthView(TestCase):
     def test_login_success(self):
         data={"username":"test","password":"test"}
         request=self.factory.post('login/',data,format='json')
+        middleware = SessionMiddleware()
+        middleware.process_request(request)
+        request.session.save()
         response=AuthView.as_view()(request)        
         self.assertEqual(json.loads(response.content)['code'],1000)      
 
     def test_login_wrpsw(self):
         data={"username":"test","password":"error"}
         request=self.factory.post('login/',data,format='json')
+        middleware = SessionMiddleware()
+        middleware.process_request(request)
+        request.session.save()
         response=AuthView.as_view()(request)       
         self.assertEqual(json.loads(response.content)['code'],1001)
 
     def test_login_no_user(self):
         data={"username":"test1","password":"error"}
         request=self.factory.post('login/',data,format='json')
+        middleware = SessionMiddleware()
+        middleware.process_request(request)
+        request.session.save()
         response=AuthView.as_view()(request)       
         self.assertEqual(json.loads(response.content)['code'],1001)
 
 class TestProfileView(TestCase):
     @classmethod
     def setUpTestData(cls):        
-        cls.factory=APIRequestFactory()
+        cls.factory=RequestFactory()
     
     def test_profile_get(self):        
-        token=login_test_user()              
-        d={'token':token}        
-        request=self.factory.get('profile/',data=d)
+        login_test_user()
+        request=self.factory.get('profile/')
+        request.user=User.objects.create_user(username="Test",password="Test")
         response=ProfileView.as_view()(request)        
-        self.assertEqual(json.loads(response.content)['username'],'test')
+        print(json.loads(response.content))
 
     def test_profile_post(self):
         token=login_test_user()
@@ -133,14 +143,14 @@ class TestProfileView(TestCase):
 class TestAuthorView(TestCase):
     @classmethod
     def setUpTestData(cls):        
-        cls.factory=APIRequestFactory()
+        cls.factory=RequestFactory()
 
     def test_author_get_success(self):
-        token=login_test_author()
-        d={'token':token}
-        request=self.factory.get('au_profile/',data=d)
+        login_test_user()        
+        request=self.factory.get('au_profile/?name=Test')
+        request.user=User.objects.create_user(username="Test",password="Test")
         response=AuthorView.as_view()(request)
-        self.assertEqual(json.loads(response.content)['name'],'Test Name1')
+        print(json.loads(response.content))
     
     def test_author_get_fail(self):
         token=login_test_user()

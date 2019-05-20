@@ -37,21 +37,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'SAcore',
+    'SAcore.apps.SacoreConfig',
     'rest_framework',
-    'rest_framework.authtoken',
-    'jet_django',
-    'django_apscheduler'
+    # 'rest_framework.authtoken',
+    #'jet_django',
+    # 'django_apscheduler',
 ]
 
 
 AUTH_USER_MODEL = 'SAcore.User'
-
+AUTHENTICATION_BACKENDS=['django.contrib.auth.backends.ModelBackend']
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': ["SAcore.utils.auth.Authentication",],
-    #匿名用户配置
-    'UNAUTHENTICATED_USER': None,           # 设置匿名用户的用户名, 默认为 AnonymousUser, 使用 request.user 查看
-    'UNAUTHENTICATED_TOKEN': None,  
+    # 'DEFAULT_AUTHENTICATION_CLASSES': ["SAcore.utils.auth.Authentication",],
+    # #匿名用户配置
+    # 'UNAUTHENTICATED_USER': None,           # 设置匿名用户的用户名, 默认为 AnonymousUser, 使用 request.user 查看
+    # 'UNAUTHENTICATED_TOKEN': None,  
     'PAGE_SIZE':10,
     'DEFAULT_PAGINATION_CLASS':'rest_framework.pagination.LimitOffsetPagination',
 }
@@ -102,18 +102,18 @@ DATABASES = {
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    # },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    # },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    # },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    # },
 ]
 
 
@@ -140,4 +140,9 @@ STATICFILES_URL = (
 )
 PROJECT_ROOT = os.path.dirname(__file__)
 STATICFILES_DIRS = (os.path.join(PROJECT_ROOT, 'static'),)
-
+LOGIN_URL='/api/login/'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'xinghangliu233@gmail.com'
+EMAIL_HOST_PASSWORD = 'lxh680101'
+EMAIL_PORT = 587
