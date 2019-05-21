@@ -34,10 +34,11 @@ class AuthView(APIView):
             'code': 1000,
             'msg': None
         }
-        try:
-            username = request.data.get('username')
-            pwd = request.data.get('password')
+        try:                  
+            username = request.data['username']
+            pwd = request.data['password']
             user = authenticate(username=username, password=pwd)
+            print(user)
             if user is not None:
                 login(request, user)
             else:
@@ -199,12 +200,10 @@ class RegisterView(APIView):
         user = User.objects.filter(username=username).first()
         if user:
             return JsonResponse({'msg': "该用户名已被注册， 换一个试试吧"}, status=400)
-        user_se = RegisterSerializer(data=data)
-        if user_se.is_valid():
-            user_se.save()
-            return JsonResponse(user_se.data, status=200)
-        return JsonResponse(user_se.errors, status=400)
-
+        else:
+            password=data['password']
+            User.objects.create_user(username=username,password=password)
+            return JsonResponse({'msg':"注册成功！"}, status=200)        
 
 # 搜索函数需要重新写
 class SearchView(APIView):

@@ -10,7 +10,7 @@ from django.contrib.sessions.middleware import SessionMiddleware
 
 def generateUser():
     u=User.objects.create_user(username="test",password="test")
-    u.save()
+    
     
 def generateAuthor():
     for i in range(1,10):
@@ -79,7 +79,7 @@ class TestRegisterView(TestCase):
         data={"data":{"username":"test2","password":"test2","Type":"U","telephone":"test"}}
         request=self.factory.post('register/',data,format='json')
         response=RegisterView.as_view()(request)        
-        self.assertEqual(response.status_code,200)
+        p
 
 class TestAuthView(TestCase):
     @classmethod
