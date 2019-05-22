@@ -2,12 +2,12 @@ from django.contrib import admin
 from .models import *
 
 # Register your models here.
-# @admin.register(User)
-# class UserAdmin(admin.ModelAdmin):
-#     list_display = ('username', 'email', 'telephone','balance','Type')
-#     search_fields = ('username', 'email', 'telephone')
-#     list_filter = ('Type',)
-#     ordering = ['username']
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    list_display = ('username', 'balance','Type')
+    search_fields = ('username',)
+    list_filter = ('Type',)
+    ordering = ['username']
 
 # @admin.register(Author)
 # class AuthorAdmin(admin.ModelAdmin):
@@ -74,7 +74,3 @@ from .models import *
 #     )
 
 # # admin.site.register(UserToken)
-
-
-
-

@@ -20,8 +20,7 @@ return:{status,msg}
 
 ## 获取个人信息
 
-url: profile/  
-get: （按道理无需传任何内容，django会保证能获取到用户信息）
+url: profile/ 
 return:{id，username，Type(U为普通用户，E为专家用户)，avatar(头像的url),balance(余额),}
 
 ##  个人信息修改

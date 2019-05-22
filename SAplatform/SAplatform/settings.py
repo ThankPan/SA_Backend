@@ -39,19 +39,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'SAcore.apps.SacoreConfig',
     'rest_framework',
-    # 'rest_framework.authtoken',
-    #'jet_django',
-    # 'django_apscheduler',
+    'rest_framework.authtoken',    
 ]
 
 
 AUTH_USER_MODEL = 'SAcore.User'
-AUTHENTICATION_BACKENDS=['django.contrib.auth.backends.ModelBackend']
 REST_FRAMEWORK = {
-    # 'DEFAULT_AUTHENTICATION_CLASSES': ["SAcore.utils.auth.Authentication",],
-    # #匿名用户配置
-    # 'UNAUTHENTICATED_USER': None,           # 设置匿名用户的用户名, 默认为 AnonymousUser, 使用 request.user 查看
-    # 'UNAUTHENTICATED_TOKEN': None,  
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
     'PAGE_SIZE':10,
     'DEFAULT_PAGINATION_CLASS':'rest_framework.pagination.LimitOffsetPagination',
 }

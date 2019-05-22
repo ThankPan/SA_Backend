@@ -9,8 +9,6 @@ from rest_framework import exceptions
 from django.utils import timezone
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import FileUploadParser, MultiPartParser
-# from apscheduler.schedulers.background import BackgroundScheduler
-# from django_apscheduler.jobstores import DjangoJobStore,register_events, register_job
 from django.contrib.auth import authenticate, login
 import datetime
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -18,48 +16,47 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils import six
 from django.core.mail import send_mail
+from django.contrib.auth import get_user_model
+from rest_framework.permissions import IsAuthenticated
 
+User = get_user_model()
 
 # Create your views here.
 
 
-def author_check(user):
-    return user.Type == "E"
+# class AuthView(APIView):
 
+#     def post(self, request, *args, **kwargs):
+#         ret = {
+#             'code': 1000,
+#             'msg': None
+#         }
+#         try:                  
+#             username = request.data['username']
+#             pwd = request.data['password']
+#             user = authenticate(username=username, password=pwd)
+#             print(user)
+#             if user is not None:
+#                 login(request, user)
+#             else:
+#                 ret['code'] = 1001
+#                 ret['msg'] = '用户名或密码错误'
 
-class AuthView(APIView):
+#         except Exception as e:
+#             print(e)
+#             ret['code'] = 1002
+#             ret['msg'] = '请求异常'
 
-    def post(self, request, *args, **kwargs):
-        ret = {
-            'code': 1000,
-            'msg': None
-        }
-        try:                  
-            username = request.data['username']
-            pwd = request.data['password']
-            user = authenticate(username=username, password=pwd)
-            print(user)
-            if user is not None:
-                login(request, user)
-            else:
-                ret['code'] = 1001
-                ret['msg'] = '用户名或密码错误'
-
-        except Exception as e:
-            print(e)
-            ret['code'] = 1002
-            ret['msg'] = '请求异常'
-
-        return JsonResponse(ret)
+#         return JsonResponse(ret)
 
 # U2E_apply需要修改
 
 
-class ProfileView(LoginRequiredMixin, APIView):
+class ProfileView(APIView):
     '''
         个人信息相关业务
     '''
-    login_url = '/login/'
+    permission_classes = (IsAuthenticated,)
 
     # 获得个人信息
     def get(self, request, *args, **kwargs):
@@ -121,12 +118,12 @@ class VerifyView(APIView):
 # 用户经过认证后，作为专家登录还需修改
 
 
-class AuthorView(LoginRequiredMixin, APIView):
+class AuthorView(APIView):
     '''
     专家信息相关业务
     '''
     # 用户认证
-    # authentication_classes = [Authentication,]
+    permission_classes = (IsAuthenticated,)
 
     # 文件parser
     parser_classes = (MultiPartParser,)
@@ -139,7 +136,7 @@ class AuthorView(LoginRequiredMixin, APIView):
         return JsonResponse(res, status=200)
 
     # 修改专家邮箱，可以考虑加入邮箱修改结合邮箱验证
-    @user_passes_test(author_check)
+    
     def post(self, request, *args, **kwargs):
         user = request.user
         email = request.data['email']
@@ -153,7 +150,7 @@ class AuthorView(LoginRequiredMixin, APIView):
         )
         return JsonResponse({'email':email})
 
-    @user_passes_test(author_check)
+    
     # 发布资源
     def put(self, request, *args, **kwargs):
         token = request.GET['token']
@@ -191,8 +188,7 @@ class AuthorView(LoginRequiredMixin, APIView):
 class RegisterView(APIView):
     '''
     注册视图
-    '''
-    authentication_classes = []
+    '''   
 
     def post(self, request, *args, **kwargs):
         data = request.data['data']
@@ -265,12 +261,11 @@ class DetailView(APIView):
 # Resource的get函数需要修改
 
 
-class StarView(LoginRequiredMixin, APIView):
+class StarView(APIView):
     '''
     收藏视图
     '''
-    # authentication_classes = [Authentication,]
-    login_url = '/login/'
+    permission_classes = (IsAuthenticated,)
     # 列出当前用户的所有收藏
 
     def get(self, request, *args, **kwargs):
@@ -368,14 +363,14 @@ class StarView(LoginRequiredMixin, APIView):
 # # resource的get函数需要修改
 
 
-class BuyedView(LoginRequiredMixin, APIView):
+class BuyedView(APIView):
     '''
         已购资源视图
     '''
     # 用户认证
-    # authentication_classes = [Authentication,]
+    
     # 列出所有已购资源
-    login_url = '/login/'
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
         user = request.user
@@ -412,13 +407,13 @@ class BuyedView(LoginRequiredMixin, APIView):
 
 
 # 关于获取头像时返回的内容还需确认与修改
-class AvatorView(LoginRequiredMixin, APIView):
+class AvatorView(APIView):
     '''
         头像相关业务
     '''
 
     # 验证身份
-    # authentication_classes = [Authentication,]
+    permission_classes = (IsAuthenticated,)
 
     # 关于获取头像时返回的内容还需确认与修改
     # 获取头像
@@ -517,12 +512,12 @@ class AvatorView(LoginRequiredMixin, APIView):
 #         return JsonResponse(ret)
 
 
-class RechargeView(LoginRequiredMixin, APIView):
+class RechargeView(APIView):
     '''
         充值视图
     '''
     # 用户认证
-    # authentication_classes = [Authentication,]
+    permission_classes = (IsAuthenticated,)
 
     # 充值
     def post(sefl, request, *args, **kwargs):

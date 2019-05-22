@@ -1,9 +1,10 @@
 from django.urls import path
 from django.conf.urls import url, re_path
 from . import views
+from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
-    path('login/', views.AuthView.as_view()),
+    # path('login/', views.AuthView.as_view()),
     path('profile/', views.ProfileView.as_view()),
     path('au_profile/', views.AuthorView.as_view()),
     path('register/', views.RegisterView.as_view()),
@@ -19,5 +20,6 @@ urlpatterns = [
     # path('coworker/', views.CoworkerView.as_view()),
     # path('auction/', views.AuctionView.as_view()),
     path('recharge/', views.RechargeView.as_view()),
+    path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
 
 ]
