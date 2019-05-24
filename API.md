@@ -100,3 +100,10 @@ return:论文：{name,year,abstarct,keywords,ci_count,url,price,author1,authors,
 专利：{}还需根据数据情况稍作修改
 除了以上内容，还有几个数据为公共数据{starred,bought}(True/False)
 为当前用户的收藏与购买状态，未登陆时均为False
+
+
+## 搜索
+url:search/
+post:{field,content}Field为搜索领域：标题，作者，全文，关键字，发表时间。content为用户输入的搜索内容
+return：{Type}P1为论文，P2为专利
+{title,authors,time}为标题，作者（发明者），发表时间
