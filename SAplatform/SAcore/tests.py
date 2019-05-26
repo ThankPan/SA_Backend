@@ -389,8 +389,14 @@ User = get_user_model()
 #         request=factory.post('buy/?token=%s'%(token),data=d,format='json')
 #         response=BuyedView.as_view()(request)
 #         self.assertEqual(json.loads(response.content)['msg'],"资源不存在")
-# class TestDataGenerate(TestCase):
-#     def generate(self):
+class TestDataGenerate(TestCase):
+    def generate(self):
+        Paper.nodes.all
+        print(p)
+            # r=Resource.objects.get(name=paper.name)
+            # r.uid=paper.uid
+            # r.save()
+            # print(r)
 #         p2=Paper.nodes.get(name='Test Paper3')
 #         p3=Paper.nodes.get(name='Test Paper4')
 #         a1=Author.nodes.get(name='Test Author')

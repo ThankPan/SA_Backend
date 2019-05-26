@@ -78,10 +78,9 @@ class ProfileView(APIView):
     # 申请成为专家
     def put(self, request, *args, **kwargs):
         user = request.user
-        name = request.data['name']
-        print(name)
+        uid = request.data['uid']        
         # try:
-        au=Author.nodes.get(name=name)
+        au=Author.nodes.get(uid=uid)
         print(au)
         email=au.email
         token=account_activation_token.make_token(user)
@@ -137,8 +136,8 @@ class AuthorView(APIView):
     # 获得专家个人信息
 
     def get(self, request, *args, **kwargs):
-        name = request.GET['name']
-        au = Author.nodes.get_or_none(name=name)
+        uid = request.GET['uid']
+        au = Author.nodes.get_or_none(uid=uid)
         res = au.serialize
         return JsonResponse(res, status=200)
 
@@ -147,7 +146,7 @@ class AuthorView(APIView):
     def post(self, request, *args, **kwargs):
         user = request.user
         email = request.data['email']
-        token=account_activation_token()
+        token=account_activation_token.make_token(user)
         AuthorToken.objects.create(email=email,token=token).save()
         send_mail(
             subject='科技资源交易平台验证邮件',
@@ -218,12 +217,21 @@ class SearchView(APIView):
     # authentication_classes = [Authentication,]
 
     # 获取搜索结果
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
 
         field = request.data['field']
         string=request.data['content']
+        result=[]
+        ret={}
         if field=='Title':
-            Paper.nodes.filter(name__contains=string)
+            p=Paper.nodes.filter(name__contains=string).all()
+            for paper in p:
+                result.append(paper.serialize)
+        # elif field=='author':
+
+        ret['result']=result
+        return JsonResponse(ret)
+
 
 
 # 对资源的获取需要修改
@@ -238,21 +246,18 @@ class DetailView(APIView):
     def post(self, request, *args, **kwargs):
         ret = {}
         t = request.data['Type']
-        title = request.data['title']
+        uid = request.data['uid']
         # try:
-        if t == "P1":
-            print(title)
-            r1 = Paper.nodes.get(name=title)
-            print(r1)               
-                
+        if t == "P1":            
+            r1 = Paper.nodes.get(uid=uid)
         else:
-            r1 = Patent.nodes.get(name=title)
+            r1 = Patent.nodes.get(uid=uid)
         ret = {**ret, **r1.serialize}
         # except Exception as e:
         #     return JsonResponse({'msg': "该资源不存在"}, status=400)
         if request.user.is_authenticated:
-            r1 = request.user.star_list.filter(name=title).first()
-            b1 = request.user.buyed_list.filter(name=title).first()
+            r1 = request.user.star_list.filter(uid=uid).first()
+            b1 = request.user.buyed_list.filter(uid=uid).first()
             if r1:
                 ret['starred'] = True
             else:
@@ -280,12 +285,12 @@ class StarView(APIView):
         user = request.user
         result={}
         star=[]        
-        res = user.star_list.all().order_by("id")
+        res = user.star_list.all().order_by("uid")
         for p in res:
             if p.Type=="P1":
-                star.append(Paper.nodes.get(name=p.name).simple_serialize)
+                star.append(Paper.nodes.get(uid=p.uid).simple_serialize)
             else:
-                star.append(Patent.nodes.get(name=p.name).simple_serialize)
+                star.append(Patent.nodes.get(uid=p.uid).simple_serialize)
         result['star']=star 
         return JsonResponse(result)
 
@@ -298,7 +303,7 @@ class StarView(APIView):
         star_items_list=star_items.split(",")
         for i in star_items_list:            
             try:
-                r1 = Resource.objects.get(name=i)                
+                r1 = Resource.objects.get(uid=i)                
                 user.star_list.add(r1)
                 user.save()
             except Exception as e:                
@@ -315,7 +320,7 @@ class StarView(APIView):
         star_items_list=star_items.split(",")
         for i in star_items_list:
             try:
-                r1 = user.star_list.get(name=i)
+                r1 = user.star_list.get(uid=i)
                 user.star_list.remove(r1)
                 user.save()
             except Exception as e:
@@ -390,9 +395,9 @@ class BuyedView(APIView):
         res = user.buyed_list.all()
         for p in res:
             if p.Type=="P1":
-                buy.append(Paper.nodes.get(name=p.name).simplie_serialize)
+                buy.append(Paper.nodes.get(uid=p.uid).simplie_serialize)
             else:
-                buy.append(Patent.nodes.get(name=p.name).simplie_serialize)
+                buy.append(Patent.nodes.get(uid=p.uid).simplie_serialize)
         result['buy']=buy
         return JsonResponse(result)
 
@@ -400,16 +405,17 @@ class BuyedView(APIView):
     # 购买资源
     def post(self, request, *args, **kwargs):
         user = request.user
-        title = request.data['title']
+        uid = request.data['uid']
+        price=Paper.nodes.get(uid=uid).price
         try:
-            r1 = Resource.objects.get(name=title)
+            r1 = Resource.objects.get(uid=uid)
         except Resource.DoesNotExist:
             return JsonResponse({"msg": "资源不存在"}, status=404)
 
-        if user.balance < r1.price:
+        if user.balance < price:
             return JsonResponse({'msg': "余额不足"}, status=400)
         try:
-            user.balance -= r1.price
+            user.balance -= price
             user.buyed_list.add(r1)
             user.save()
         except Exception as e:

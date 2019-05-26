@@ -28,6 +28,7 @@ class UserTokenAdmin(admin.ModelAdmin):
 class ResourceAdmin(admin.ModelAdmin):
     list_display = (
         'name',
+        'uid',
         'Type',        
     )
     ordering = ['name']

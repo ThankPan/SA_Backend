@@ -21,6 +21,7 @@ class Paper(StructuredNode):
     '''
         论文
     '''
+    uid=IntegerProperty()
     name = StringProperty(unique_index=True, required=True)
     year = StringProperty()
     abstract = StringProperty()
@@ -49,6 +50,7 @@ class Paper(StructuredNode):
         for do in self.domains.all():
             do_list.append(do.serialize)
         return{
+            "uid":self.uid,
             "name":self.name,
             "year":self.year,
             "abstract":self.abstract,
@@ -71,6 +73,7 @@ class Paper(StructuredNode):
         for au in self.authors.all():
             au_list.append(au.simple_serialize)
         return{
+            "uid":self.uid,
             "name":self.name,
             "year":self.year,
             "authors":au_list
@@ -78,6 +81,7 @@ class Paper(StructuredNode):
 
 #专利具体的field还需根据数据稍作修改
 class Patent(StructuredNode):
+    uid=IntegerProperty()    
     patent_id = StringProperty(unique_index=True, required=True)
     applicant_date = StringProperty()
     name = StringProperty()
@@ -102,6 +106,7 @@ class Patent(StructuredNode):
 
 
 class Author(StructuredNode):
+    uid=IntegerProperty()
     name = StringProperty(unique_index=True, required=True)
     email = EmailProperty()
     h_index = IntegerProperty()
@@ -127,6 +132,7 @@ class Author(StructuredNode):
         for own in self.owns.all():
             own_list.append(own.simple_serialize)
         return{
+            "uid":self.uid,
             "name": self.name,
             "email": self.email,
             "h_index": self.h_index,
@@ -140,6 +146,7 @@ class Author(StructuredNode):
     @property
     def simple_serialize(self):
         return{
+            "uid":self.uid,
             "name":self.name,
         }
 
@@ -169,6 +176,7 @@ class Resource(models.Model):
     )
 
     name = models.CharField(max_length=255)
+    uid = models.CharField(max_length=255,default=0)
     Type = models.CharField(max_length=2, choices=CHOICES)
     files = models.FileField(upload_to="SAcore/static/files",blank=True)
 
