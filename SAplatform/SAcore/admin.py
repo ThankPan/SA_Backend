@@ -9,6 +9,12 @@ class UserAdmin(admin.ModelAdmin):
     list_filter = ('Type',)
     ordering = ['username']
 
+@admin.register(AuthorToken)
+class UserTokenAdmin(admin.ModelAdmin):
+    list_display = ('email', 'token')
+    search_fields = ('email',)
+    ordering = ['email']
+
 # @admin.register(Author)
 # class AuthorAdmin(admin.ModelAdmin):
 #     list_display = (
@@ -18,14 +24,13 @@ class UserAdmin(admin.ModelAdmin):
 #     )
 #     ordering=['name']
 
-# @admin.register(Resource)
-# class ResourceAdmin(admin.ModelAdmin):
-#     list_display = (
-#         'title',
-#         'Type',
-#         'price'
-#     )
-#     ordering = ['title']
+@admin.register(Resource)
+class ResourceAdmin(admin.ModelAdmin):
+    list_display = (
+        'name',
+        'Type',        
+    )
+    ordering = ['name']
 
 # def make_approved(modeladmin, request, queryset):
 #     for a in queryset:

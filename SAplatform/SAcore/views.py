@@ -79,20 +79,23 @@ class ProfileView(APIView):
     def put(self, request, *args, **kwargs):
         user = request.user
         name = request.data['name']
-        try:
-            au=Author.nodes.get(name=name)
-            email=au.email
-            token=account_activation_token()
-            AuthorToken.objects.create(email=email,token=token).save()
-            send_mail(
-                subject='科技资源交易平台验证邮件',
-                message='欢迎来到科技资源交易平台，您的验证码为：%s,请输入验证码完成验证'%(token),
-                from_email='xinghangliu233@gmail.com',
-                recipient_list=email,
-            )
-            return JsonResponse({'email': email})
-        except Exception as e:
-            return JsonResponse({'msg': "申请失败"}, status=400)
+        print(name)
+        # try:
+        au=Author.nodes.get(name=name)
+        print(au)
+        email=au.email
+        token=account_activation_token.make_token(user)
+        print(token)
+        AuthorToken.objects.create(email=email,token=token).save()
+        send_mail(
+            subject='科技资源交易平台验证邮件',
+            message='欢迎来到科技资源交易平台，您的验证码为：%s,请输入验证码完成验证'%(token),
+            from_email='xinghangliu233@gmail.com',
+            recipient_list=[email],
+        )
+        return JsonResponse({'email': email})
+        # except Exception as e:
+        #     return JsonResponse({'msg': "申请失败"}, status=400)
 
 
 #生成邮箱验证所需token
@@ -109,8 +112,12 @@ class VerifyView(APIView):
         data=request.data['data']
         email=data['email']
         token=data['token']
-        at=AuthorToken.objects.get(email='email')
+        username=data['username']        
+        at=AuthorToken.objects.get(email=email)
         if token == at.token:
+            u=User.objects.get(username=username)
+            u.Type='E'
+            u.save()
             return JsonResponse({'msg':"申请成功"},status=200)
         else:
             return JsonResponse({'msg':"验证码错误"},status=400)
@@ -123,7 +130,7 @@ class AuthorView(APIView):
     专家信息相关业务
     '''
     # 用户认证
-    permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
 
     # 文件parser
     parser_classes = (MultiPartParser,)
@@ -136,7 +143,7 @@ class AuthorView(APIView):
         return JsonResponse(res, status=200)
 
     # 修改专家邮箱，可以考虑加入邮箱修改结合邮箱验证
-    
+    @permission_classes(IsAuthenticated,)
     def post(self, request, *args, **kwargs):
         user = request.user
         email = request.data['email']
@@ -152,6 +159,7 @@ class AuthorView(APIView):
 
     
     # 发布资源
+    @permission_classes(IsAuthenticated,)
     def put(self, request, *args, **kwargs):
         token = request.GET['token']
         data = request.data
@@ -212,14 +220,11 @@ class SearchView(APIView):
     # 获取搜索结果
     def get(self, request, *args, **kwargs):
 
-        keyword = request.GET['keyword']
-        result = Resource.objects.filter(
-            title__contains=keyword).order_by("id")
-        pg = PageNumberPagination()
-        page_result = pg.paginate_queryset(
-            queryset=result, request=request, view=self)
-        result_se = ResourceSerializer(instance=page_result, many=True)
-        return JsonResponse(result_se.data, safe=False)
+        field = request.data['field']
+        string=request.data['content']
+        if field=='Title':
+            Paper.nodes.filter(name__contains=string)
+
 
 # 对资源的获取需要修改
 
@@ -234,14 +239,17 @@ class DetailView(APIView):
         ret = {}
         t = request.data['Type']
         title = request.data['title']
-        try:
-            if t == "P1":
-                r1 = Paper.nodes.get(name=title)
-            else:
-                r1 = Patent.nodes.get(name=title)
-            ret = {**ret, **r1.serialize}
-        except Exception as e:
-            return JsonResponse({'msg': "该资源不存在"}, status=400)
+        # try:
+        if t == "P1":
+            print(title)
+            r1 = Paper.nodes.get(name=title)
+            print(r1)               
+                
+        else:
+            r1 = Patent.nodes.get(name=title)
+        ret = {**ret, **r1.serialize}
+        # except Exception as e:
+        #     return JsonResponse({'msg': "该资源不存在"}, status=400)
         if request.user.is_authenticated:
             r1 = request.user.star_list.filter(name=title).first()
             b1 = request.user.buyed_list.filter(name=title).first()
@@ -269,15 +277,15 @@ class StarView(APIView):
     # 列出当前用户的所有收藏
 
     def get(self, request, *args, **kwargs):
-        user = request.user()
+        user = request.user
         result={}
         star=[]        
         res = user.star_list.all().order_by("id")
         for p in res:
             if p.Type=="P1":
-                star.append(Paper.nodes.get(name=p.name).simplie_serialize)
+                star.append(Paper.nodes.get(name=p.name).simple_serialize)
             else:
-                star.append(Patent.nodes.get(name=p.name).simplie_serialize)
+                star.append(Patent.nodes.get(name=p.name).simple_serialize)
         result['star']=star 
         return JsonResponse(result)
 
@@ -287,13 +295,15 @@ class StarView(APIView):
         user = request.user
         data = request.data['data']
         star_items = data['item_list']
-        for i in star_items:
+        star_items_list=star_items.split(",")
+        for i in star_items_list:            
             try:
-                r1 = Resource.objects.get(name=i)
+                r1 = Resource.objects.get(name=i)                
                 user.star_list.add(r1)
                 user.save()
-            except Exception as e:
+            except Exception as e:                
                 return JsonResponse({"msg": "收藏失败"}, status=400)
+
 
         return JsonResponse({"msg": "收藏成功"}, status=200)
 
@@ -302,7 +312,8 @@ class StarView(APIView):
         user = request.user
         data = request.data['data']
         star_items = data['item_list']
-        for i in star_items:
+        star_items_list=star_items.split(",")
+        for i in star_items_list:
             try:
                 r1 = user.star_list.get(name=i)
                 user.star_list.remove(r1)

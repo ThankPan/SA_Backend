@@ -170,7 +170,7 @@ class Resource(models.Model):
 
     name = models.CharField(max_length=255)
     Type = models.CharField(max_length=2, choices=CHOICES)
-    files = models.FileField(upload_to="SAcore/static/files")
+    files = models.FileField(upload_to="SAcore/static/files",blank=True)
 
 
 class Avator(models.Model):
