@@ -23,7 +23,7 @@ class Paper(StructuredNode):
     '''
     uid=IntegerProperty()
     name = StringProperty(unique_index=True, required=True)
-    year = StringProperty()
+    year = IntegerProperty()
     abstract = StringProperty()
     keywords = StringProperty()    
     ci_count = IntegerProperty(default=0)

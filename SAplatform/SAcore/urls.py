@@ -9,6 +9,7 @@ urlpatterns = [
     path('au_profile/', views.AuthorView.as_view()),
     path('register/', views.RegisterView.as_view()),
     path('search/', views.SearchView.as_view()),
+    path('advsearch/',views.AdvanceSearchView.as_view()),
     path('detail/', views.DetailView.as_view()),
     path('star/', views.StarView().as_view()),
     path('verify/',views.VerifyView().as_view()),

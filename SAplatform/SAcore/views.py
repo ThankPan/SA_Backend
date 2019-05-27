@@ -218,20 +218,98 @@ class SearchView(APIView):
 
     # 获取搜索结果
     def post(self, request, *args, **kwargs):
-
+        Type=request.data['type']
         field = request.data['field']
         string=request.data['content']
         result=[]
         ret={}
+        if Type=='P1':
+            t="Paper"            
+        else:
+            t="Patent"            
         if field=='Title':
-            p=Paper.nodes.filter(name__contains=string).all()
-            for paper in p:
-                result.append(paper.serialize)
-        # elif field=='author':
-
+            query="match(n:"+t+") where n.name =~'.*"+string+".*' return n limit 50"
+            results, meta = db.cypher_query(query)
+            if Type=='P1':
+                re = [Paper.inflate(row[0]) for row in results]
+            else:
+                re = [Patent.inflate(row[0]) for row in results]
+            for pa in re:
+                result.append(pa.serialize)                        
+        elif field=='Author':
+            if Type=='P1':                                     
+                query="match(n:"+t+")-[r:AUTHOR1]-(a:Author) where a.name =~'.*"+string+".*' return n limit 50"
+                results, meta = db.cypher_query(query)
+                re = [Paper.inflate(row[0]) for row in results]
+                for pa in re:
+                    result.append(pa.serialize)
+                query="match(n:"+t+")-[r:AUTHORS]-(a:Author) where a.name =~'.*"+string+".*' return n limit 50"
+                results, meta = db.cypher_query(query)
+                re = [Paper.inflate(row[0]) for row in results]            
+                for pa in re:
+                    result.append(pa.serialize)
+            else:
+                query="match(n:"+t+")-[r:INVENTOR]-(a:Author) where a.name =~'.*"+string+".*' return n limit 50"
+                results, meta = db.cypher_query(query)
+                re = [Patent.inflate(row[0]) for row in results]
+                for pa in re:
+                    result.append(pa.serialize)
         ret['result']=result
         return JsonResponse(ret)
 
+class AdvanceSearchView(APIView):
+    def post(self, request, *args, **kwargs):
+        title=request.data['title']
+        keyword = request.data['keyword']
+        author=request.data['author']
+        Type=request.data['type']
+        time_low=request.data['time_low']
+        time_high=request.data['time_high']
+        if len(time_low)==0:
+            time_low=-100
+        if len(time_high)==0:
+            time_high=10000
+        result=[]
+        ret={}
+        if Type=='P1':
+            t="Paper"            
+        else:
+            t="Patent"
+        if Type=="P2":
+            query="match(n:Patent)-[r:INVENTOR]-(a:Author) where n.name =~'.*"+title+".*' \
+            and n.keywords =~'.*"+keyword+".*' \
+            and a.name =~'.*"+author+".*' \
+            and n.year >= "+str(time_low)+" \
+            and n.year <= "+str(time_high)+" \
+            return n limit 50"
+            results, meta = db.cypher_query(query)
+            re = [Patent.inflate(row[0]) for row in results]
+            for pa in re:
+                result.append(pa.serialize)
+        else:
+            query="match(n:Paper)-[r:AUTHOR1]-(a:Author) where n.name =~'.*"+title+".*' \
+            and n.keywords =~'.*"+keyword+".*' \
+            and a.name =~'.*"+author+".*' \
+            and n.year >= "+str(time_low)+" \
+            and n.year <= "+str(time_high)+" \
+            return n limit 50"
+            print(query)
+            results, meta = db.cypher_query(query)
+            re = [Patent.inflate(row[0]) for row in results]
+            for pa in re:
+                result.append(pa.serialize)
+            query="match(n:Paper)-[r:AUTHORS]-(a:Author) where n.name =~'.*"+title+".*' \
+            and n.keywords =~'.*"+keyword+".*' \
+            and a.name =~'.*"+author+".*' \
+            and n.year >= "+str(time_low)+" \
+            and n.year <= "+str(time_high)+" \
+            return n limit 50"
+            results, meta = db.cypher_query(query)
+            re = [Patent.inflate(row[0]) for row in results]
+            for pa in re:
+                result.append(pa.serialize)
+        ret['result']=result
+        return JsonResponse(ret)
 
 
 # 对资源的获取需要修改

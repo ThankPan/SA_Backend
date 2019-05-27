@@ -391,8 +391,14 @@ User = get_user_model()
 #         self.assertEqual(json.loads(response.content)['msg'],"资源不存在")
 class TestDataGenerate(TestCase):
     def generate(self):
-        Paper.nodes.all
-        print(p)
+        string ='test'                
+        query="match(n:Paper) where n.name =~'.*"+string+".*' return n limit 50"
+        results, meta = db.cypher_query(query)
+        paper = [Paper.inflate(row[0]) for row in results]        
+        for pa in paper:
+            print(pa.serialize)
+            
+        
             # r=Resource.objects.get(name=paper.name)
             # r.uid=paper.uid
             # r.save()
