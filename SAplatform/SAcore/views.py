@@ -274,8 +274,8 @@ class AdvanceSearchView(APIView):
             query="match(n:Patent)-[r:INVENTOR]-(a:Author) where n.name =~'.*"+title+".*' \
             "" \
             and a.name =~'.*"+author+".*' \
-            and n.year >= "+str(time_low)+" \
-            and n.year <= "+str(time_high)+" \
+            "" \
+            "" \
             return n limit 50"
             results, meta = db.cypher_query(query)
             re = [Patent.inflate(row[0]) for row in results]

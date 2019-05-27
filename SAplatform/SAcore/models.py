@@ -21,7 +21,7 @@ class Paper(StructuredNode):
     '''
         论文
     '''
-    uid=IntegerProperty()
+    uid=StringProperty()
     name = StringProperty(unique_index=True, required=True)
     year = IntegerProperty()
     abstract = StringProperty()
@@ -81,7 +81,7 @@ class Paper(StructuredNode):
 
 #专利具体的field还需根据数据稍作修改
 class Patent(StructuredNode):
-    uid=IntegerProperty()    
+    uid=StringProperty()    
     patent_id = StringProperty(unique_index=True, required=True)
     applicant_date = StringProperty()
     name = StringProperty()
@@ -97,16 +97,21 @@ class Patent(StructuredNode):
 
     @property
     def serialize(self):
+        au_list=[]
+        for au in self.inventor.all():
+            au_list.append(au.simple_serialize)
         return{
+            "uid":self.uid,
             "patent_id":self.patent_id,
             "applicant_date":self.applicant_date,
-            "name":self.name,
-            
+            "name":self.name, 
+            "inventor":au_list,
+
         }
 
 
 class Author(StructuredNode):
-    uid=IntegerProperty()
+    uid=StringProperty()
     name = StringProperty(unique_index=True, required=True)
     email = EmailProperty()
     h_index = IntegerProperty()
