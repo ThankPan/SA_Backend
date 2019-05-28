@@ -621,3 +621,58 @@ class RechargeView(APIView):
         except Exception as e:
             return JsonResponse({'msg': "充值失败"}, status=400)
         return JsonResponse({'msg': "充值成功"}, status=200)
+
+class CoGraphView(APIView):
+    def post(sefl, request, *args, **kwargs):
+        uid=request.data['uid']
+        base=Author.nodes.get(uid=uid)        
+        user_set=set((uid,))
+        base_id=0
+        nodes=[]
+        links=[]
+        l={}
+        l["sourceWeight"]=1
+        l["targetWeight"]=1
+        n={"id":base_id,"name":base.name,"value":1}
+        nodes.append(n)
+        for co in base.coworkers.all():                    
+            if co.uid not in user_set:
+                user_set.add(co.uid)
+                new={}
+                new["id"]=len(user_set)-1
+                new["name"]=co.name
+                new["value"]=1
+                print(new)
+                nodes.append(new)
+                new_link={}
+                new_link["sourceWeight"]=1
+                new_link["targetWeight"]=1
+                new_link["source"]=base_id
+                new_link["target"]=new["id"]
+                print(new_link)
+                links.append(new_link)
+        print(nodes)
+        for n in nodes[0:]:
+            base=Author.nodes.get(name=n["name"])
+            base_id=n["id"]
+            for co in base.coworkers.all():
+                print(co)                    
+                if co.uid not in user_set:
+                    user_set.add(co.uid)
+                    new={}
+                    new["id"]=len(user_set)-1
+                    new["name"]=co.name
+                    new["value"]=1
+                    print(new)
+                    nodes.append(new)
+                    new_link={}
+                    new_link["sourceWeight"]=1
+                    new_link["targetWeight"]=1
+                    new_link["source"]=base_id
+                    new_link["target"]=new["id"]
+                    print(new_link)
+                    links.append(new_link)
+        res={}
+        res["nodes"]=nodes
+        res["links"]=links
+        return JsonResponse(res)
