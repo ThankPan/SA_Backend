@@ -17,9 +17,11 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls import url
 # from jet_django.urls import jet_urls
-
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('SAcore.urls')),
     # url(r'^jet_api/', include(jet_urls))
 ]
+
+urlpatterns += staticfiles_urlpatterns()

@@ -21,13 +21,12 @@ class Paper(StructuredNode):
     '''
         论文
     '''
-    uid=StringProperty()
+    uid=UniqueIdProperty()
     name = StringProperty(unique_index=True, required=True)
     year = IntegerProperty()
     abstract = StringProperty()
     keywords = StringProperty()    
-    ci_count = IntegerProperty(default=0)
-    url = StringProperty()
+    ci_count = IntegerProperty(default=0)    
     price = IntegerProperty(default=0)
     author1 = RelationshipTo('Author', 'AUTHOR1')
     authors = RelationshipTo('Author', 'AUTHORS')
@@ -81,7 +80,7 @@ class Paper(StructuredNode):
 
 #专利具体的field还需根据数据稍作修改
 class Patent(StructuredNode):
-    uid=StringProperty()    
+    uid=UniqueIdProperty()    
     patent_id = StringProperty(unique_index=True, required=True)
     applicant_date = StringProperty()
     name = StringProperty()
@@ -111,7 +110,7 @@ class Patent(StructuredNode):
 
 
 class Author(StructuredNode):
-    uid=StringProperty()
+    uid=UniqueIdProperty()
     name = StringProperty(unique_index=True, required=True)
     email = EmailProperty()
     h_index = IntegerProperty()
@@ -188,8 +187,8 @@ class Resource(models.Model):
 
 class Avator(models.Model):
 
-    name = models.CharField(max_length=255)
-    files = models.ImageField(upload_to="SAcore/static/author_avator")
+    uid = models.CharField(max_length=255)
+    avator = models.ImageField(upload_to="SAcore/static/author_avator")
 # # def md5(user):
 # #         import hashlib
 # #         import time
@@ -211,9 +210,7 @@ class User(AbstractUser):
         ('U', 'User'),
         ('E', 'Expert'),
     )    
-    Type = models.CharField(max_length=1, choices=TYPE_CHOICES, default='U')
-    avator = models.ImageField(
-        upload_to="SAcore/static/user_avator", blank=True)
+    Type = models.CharField(max_length=1, choices=TYPE_CHOICES, default='U')    
     balance = models.IntegerField(default=0)
     star_list = models.ManyToManyField(
         'Resource', blank=True, related_name="star_list")
@@ -221,6 +218,7 @@ class User(AbstractUser):
         'Resource', blank=True, related_name="buyed_list")
     followed_list = models.ManyToManyField('User', blank=True)
     name = models.CharField(max_length=255, blank=True)
+    uid=models.CharField(max_length=255, blank=True)
 
     def __str__(self):
         return self.username

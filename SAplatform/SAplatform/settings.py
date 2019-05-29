@@ -132,18 +132,18 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
+# MEDIA_ROOT='SAcore/static/'
 STATIC_URL = '/static/'
 STATICFILES_URL = (
     os.path.join(BASE_DIR, 'static'),
 )
 PROJECT_ROOT = os.path.dirname(__file__)
-STATICFILES_DIRS = (os.path.join(PROJECT_ROOT, 'static'),)
-LOGIN_URL='/api/login/'
+STATICFILES_DIRS = (os.path.join(PROJECT_ROOT, 'SAcore/static'),)
 EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'xinghangliu233@gmail.com'
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_HOST_USER = '18807479812@163.com'
 EMAIL_HOST_PASSWORD = 'lxh680101'
-EMAIL_PORT = 587
+EMAIL_PORT = 25
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
