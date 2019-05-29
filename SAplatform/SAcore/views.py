@@ -33,8 +33,7 @@ class ProfileView(APIView):
     # 获得个人信息
     def get(self, request, *args, **kwargs):
         user = request.user
-        user_se = UserSerializer(user)
-        print(settings.STATICFILES_URL)
+        user_se = UserSerializer(user)        
         return JsonResponse(user_se.data)
 
     # 修改个人信息
@@ -53,11 +52,9 @@ class ProfileView(APIView):
         user = request.user
         uid = request.data['uid']        
         # try:
-        au=Author.nodes.get(uid=uid)
-        print(au)
+        au=Author.nodes.get(uid=uid)        
         email=au.email
-        token=account_activation_token.make_token(user)
-        print(token)
+        token=account_activation_token.make_token(user)        
         AuthorToken.objects.get_or_create(email=email,token=token)
         send_mail(
             subject='科技资源交易平台验证邮件',
@@ -162,8 +159,7 @@ class AuthorView(APIView):
                 if au1!=au:
                     au.coworkers.connect(au1)
                     au.save()
-        Resource.objects.create(Type="P1",name=r.name,files=attach_file,uid=r.uid).save()
-        print(attach_file)
+        Resource.objects.create(Type="P1",name=r.name,files=attach_file,uid=r.uid).save()        
         return JsonResponse({'msg': "上传成功",'url':"files/"+attach_file.name})
 
 
@@ -472,7 +468,7 @@ class RechargeView(APIView):
         return JsonResponse({'msg': "充值成功"}, status=200)
 
 class CoGraphView(APIView):
-    def post(sefl, request, *args, **kwargs):
+    def post(sefl, request, *args, **kwargs):        
         uid=request.data['uid']
         base=Author.nodes.get(uid=uid)        
         user_set=set((uid,))
@@ -491,36 +487,42 @@ class CoGraphView(APIView):
                 new["id"]=len(user_set)-1
                 new["name"]=co.name
                 new["value"]=1
-                print(new)
-                nodes.append(new)
+                nodes.append(new)                
                 new_link={}
                 new_link["sourceWeight"]=1
                 new_link["targetWeight"]=1
                 new_link["source"]=base_id
                 new_link["target"]=new["id"]
-                print(new_link)
                 links.append(new_link)
-        print(nodes)
-        for n in nodes[0:]:
+                if len(nodes)>20:
+                    break        
+        for n in nodes[1:]:
             base=Author.nodes.get(name=n["name"])
             base_id=n["id"]
-            for co in base.coworkers.all():
-                print(co)                    
+            for co in base.coworkers.all():                                   
                 if co.uid not in user_set:
-                    user_set.add(co.uid)
-                    new={}
-                    new["id"]=len(user_set)-1
-                    new["name"]=co.name
-                    new["value"]=1
-                    print(new)
-                    nodes.append(new)
-                    new_link={}
-                    new_link["sourceWeight"]=1
-                    new_link["targetWeight"]=1
-                    new_link["source"]=base_id
-                    new_link["target"]=new["id"]
-                    print(new_link)
-                    links.append(new_link)
+                    if len(nodes)<20:
+                        user_set.add(co.uid)
+                        new={}
+                        new["id"]=len(user_set)-1
+                        new["name"]=co.name
+                        new["value"]=1                        
+                        nodes.append(new)                    
+                        new_link={}
+                        new_link["sourceWeight"]=1
+                        new_link["targetWeight"]=1
+                        new_link["source"]=base_id
+                        new_link["target"]=new["id"]
+                        links.append(new_link)
+                else:
+                     for n in nodes:
+                         if  n["name"]==co.name:
+                            new_link={}
+                            new_link["sourceWeight"]=1
+                            new_link["targetWeight"]=1
+                            new_link["source"]=base_id
+                            new_link["target"]=n["id"]
+                            links.append(new_link)
         res={}
         res["nodes"]=nodes
         res["links"]=links

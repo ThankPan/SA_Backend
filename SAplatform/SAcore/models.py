@@ -75,7 +75,8 @@ class Paper(StructuredNode):
             "uid":self.uid,
             "name":self.name,
             "year":self.year,
-            "authors":au_list
+            "authors":au_list,
+            "ci_count":self.ci_count,
         }
 
 #专利具体的field还需根据数据稍作修改
