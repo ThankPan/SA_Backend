@@ -54,8 +54,7 @@ class Paper(StructuredNode):
             "year":self.year,
             "abstract":self.abstract,
             "keywords":self.keywords,            
-            "ci_count":self.ci_count,
-            "url":self.url,
+            "ci_count":self.ci_count,            
             "price":self.price,
             "author1":au_list1,
             "authors":au_list2,
@@ -219,6 +218,7 @@ class User(AbstractUser):
         'Resource', blank=True, related_name="buyed_list")
     followed_list = models.ManyToManyField('User', blank=True)
     name = models.CharField(max_length=255, blank=True)
+    avator = models.CharField(max_length=255,default="author_avator/default.jpg")
     uid=models.CharField(max_length=255, blank=True)
 
     def __str__(self):

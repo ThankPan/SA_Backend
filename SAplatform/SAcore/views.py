@@ -137,8 +137,7 @@ class AuthorView(APIView):
         attach_file = request.FILES['file']
         r=Paper(name=data['name'],
                 abstract=data['abstract'],
-                keywords=data['keywords'],
-                resource_url=data['url'],
+                keywords=data['keywords'],                
                 price=data['price'],).save()
         r.author1.connect(Author.nodes.get(uid=user.uid))
         authors_text = data['authors']
@@ -152,6 +151,7 @@ class AuthorView(APIView):
             r.authors.connect(au)
             au.publishes.connect(r)
             au.save()
+        r.resource_url="static/files/"+attach_file.name
         r.save()            
         for i in range(len(au_list)):
             au=au_list[i]
@@ -160,7 +160,7 @@ class AuthorView(APIView):
                     au.coworkers.connect(au1)
                     au.save()
         Resource.objects.create(Type="P1",name=r.name,files=attach_file,uid=r.uid).save()        
-        return JsonResponse({'msg': "上传成功",'url':"files/"+attach_file.name})
+        return JsonResponse({'msg': "上传成功"})
 
 
 class RegisterView(APIView):
@@ -344,13 +344,22 @@ class StarView(APIView):
         data = request.data['data']
         star_items = data['item_list']
         star_items_list=star_items.split(",")
-        for i in star_items_list:            
-            try:
-                r1 = Resource.objects.get_or_create(uid=i)                
+        type_list=data['type_list']        
+        type_list=type_list.split(",")        
+        for i in star_items_list:
+            # try:                
+                r1,created = Resource.objects.get_or_create(uid=i)
+                if created:
+                    r1.Type=type_list[star_items_list.index(i)]
+                    if r1.Type=="P1":
+                        r1.name=Paper.nodes.get(uid=i).name
+                    else:
+                        r1.name=Patent.nodes.get(uid=i).name
+                    r1.save()
                 user.star_list.add(r1)
                 user.save()
-            except Exception as e:                
-                return JsonResponse({"msg": "收藏失败"}, status=400)
+            # except Exception as e:                
+            #     return JsonResponse({"msg": "收藏失败"}, status=400)
 
 
         return JsonResponse({"msg": "收藏成功"}, status=200)
@@ -362,12 +371,12 @@ class StarView(APIView):
         star_items = data['item_list']
         star_items_list=star_items.split(",")
         for i in star_items_list:
-            try:
+            # try:
                 r1 = user.star_list.get(uid=i)
                 user.star_list.remove(r1)
                 user.save()
-            except Exception as e:
-                return JsonResponse({"msg": "取消收藏失败"}, status=400)
+            # except Exception as e:
+            #     return JsonResponse({"msg": "取消收藏失败"}, status=400)
         return JsonResponse({"msg": "已取消收藏"}, status=200)
 
 class BuyedView(APIView):
@@ -429,9 +438,9 @@ class AvatorView(APIView):
         uid=request.GET['uid']
         try:
             a=Avator.objects.get(uid=uid)        
-            return JsonResponse({"url":"author_avator/"+a.avator.name.split('/')[-1]})
+            return JsonResponse({"url":"static/author_avator/"+a.avator.name.split('/')[-1]})
         except Avator.DoesNotExists:
-            return JsonResponse({"avator":"author_avator/default.jpg"})
+            return JsonResponse({"avator":"static/author_avator/default.jpg"})
 
     # 专家的头像上传还需修改
     # 上传头像
@@ -440,6 +449,9 @@ class AvatorView(APIView):
         user = request.user
         if user.Type == 'E':
             request.data['uid']=user.uid
+            a=request.FILES['avator']
+            user.avator="static/author_avator/"+a.name
+            user.save()
             se = AuthorAvatorSerializer(data=request.data)
             if se.is_valid():
                 se.save()
