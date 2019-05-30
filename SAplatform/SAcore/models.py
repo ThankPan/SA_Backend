@@ -105,8 +105,8 @@ class Patent(StructuredNode):
             "applicant_date":self.applicant_date,
             "name":self.name, 
             "inventor":au_list,
-
         }
+
 
 
 class Author(StructuredNode):
@@ -117,6 +117,7 @@ class Author(StructuredNode):
     g_index = IntegerProperty()
     avator = StringProperty()
     publishes = RelationshipTo('Paper', 'PUBLICATION')
+    invent=RelationshipTo('Patent', 'INVENT')
     coworkers = Relationship('Author', 'COWORK')
     domains = RelationshipTo('Domain', 'WORKAT')
     owns = RelationshipTo('Paper', 'OWNSHIP')
@@ -127,6 +128,7 @@ class Author(StructuredNode):
         co_list=[]
         do_list=[]
         own_list=[]
+        pa_list=[]
         for paper in self.publishes.all():
             p_list.append(paper.simple_serialize)
         for co in self.coworkers.all():
@@ -135,6 +137,8 @@ class Author(StructuredNode):
             do_list.append(do.serialize)
         for own in self.owns.all():
             own_list.append(own.simple_serialize)
+        for pa in self.invent.all():
+            pa_list.append(pa.serialize)
         return{
             "uid":self.uid,
             "name": self.name,
@@ -227,15 +231,6 @@ class User(AbstractUser):
     class Meta:
         verbose_name_plural = '用户'
 
-# # class UserToken(models.Model):
-# #     user = models.OneToOneField(to="User", on_delete=models.CASCADE)
-#     # token = models.CharField(max_length=64)
-
-#     # def __str__(self):
-#     #     return self.user.username
-#     # class Meta:
-#     #     verbose_name_plural = '用户Token'
-
 
 class AuthorUser(models.Model):
     '''
@@ -254,149 +249,6 @@ class AuthorUser(models.Model):
 class AuthorToken(models.Model):
     email=models.CharField(max_length=255)
     token=models.CharField(max_length=255)
-
-
-# class Resource(models.Model):
-#     '''
-#     资源类
-#     '''
-
-#     TYPE_CHOICES = (
-#         ("P1", "Paper"),
-#         ("P2", "Patent"),
-#         ("P3", "Project"),
-#     )
-
-#     title = models.CharField(max_length=255, unique=True)
-#     authors = models.ManyToManyField(Author, blank=True)
-#     intro = models.TextField(blank=True)
-#     url = models.TextField(blank=True)
-#     price = models.IntegerField(default=0)
-#     Type = models.CharField(max_length=2, choices=TYPE_CHOICES)
-#     publisher = models.CharField(max_length=255, blank=True)
-#     publish_date = models.CharField(max_length=255, blank=True)
-#     citation_nums = models.IntegerField(default=0, blank=True)
-#     agency = models.CharField(max_length=255, blank=True)
-#     patent_number = models.TextField(blank=True)
-#     patent_applicant_number = models.TextField(blank=True)
-#     file = models.FileField(upload_to="SAcore/static/files", blank=True)
-#     owner = models.ForeignKey('Author', blank=True, related_name='owner', on_delete=models.CASCADE)
-
-    # def __str__(self):
-    #     return self.title
-
-    # class Meta:
-    #     verbose_name_plural = '科研资源信息'
-
-# class U2E_apply(models.Model):
-#     '''
-#     普通用户申请成为专家的申请表
-#     '''
-
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     created_time = models.DateTimeField(auto_created=True)
-#     name = models.CharField(max_length=255, default=" ")
-#     instituition = models.CharField(max_length=255, blank=True)
-#     domain = models.CharField(max_length=255, blank=True)
-
-#     def __str__(self):
-#         return self.user.username + " : " + self.name
-
-#     # Author的操作需要修改
-#     def approve(self):
-#         au1 = Author.nodes.get_or_none(name=self.name)
-#         if not au1:
-#             au1 = Author(name=self.name).save()
-#         au1.instituition = self.instituition
-#         au1.domain = self.domain
-#         self.user.Type = "E"
-#         try:
-#             au1.save()
-#             self.delete()
-#             return True
-#         except Exception as e:
-#             print(e)
-#             return False
-
-#     class Meta:
-#         verbose_name_plural = '获取专家权限申请'
-
-
-# 申请成功后，资源的创建需要修改
-class publish_apply(models.Model):
-    '''
-    专家用户申请发布资源的申请表   '''
-
-    au = models.ForeignKey(
-        AuthorUser, on_delete=models.CASCADE, related_name="applicant")
-    name = models.CharField(max_length=255)
-    authors = models.ManyToManyField(
-        AuthorUser, blank=True, related_name="authors")
-    abstract = models.TextField()
-    keywords = models.TextField()
-    url = models.TextField(blank=True)
-    price = models.IntegerField(default=0)
-    created_time = models.DateTimeField(auto_now_add=True)
-    file = models.FileField(upload_to="SAcore/static/files", blank=True)
-
-    def __str__(self):
-        return self.au.name + " : " + self.title
-
-    def approve(self):
-        try:
-            r1 = Paper(
-                name=self.name,
-                abstract=self.abstract,
-                keywords=self.keyords,
-                url=self.url,
-                price=self.price,
-                author1=self.au
-
-            ).save()
-            authors = self.authors.all()
-            for aut in authors:
-                r1.authors.connnect(aut)
-                aut.publishes.connnect(r1)
-                r1.save()
-                aut.save()
-            Resource.objects.create(Type="P1", name=self.name, files=self.file)
-            Resource.save()
-            r1.resource_url = os.path.join(
-                "SAcore/static/files", self.file.name)
-            r1.save()
-            self.delete()
-            return True
-        except Exception as e:
-            print(e)
-            return False
-
-    class Meta:
-        verbose_name_plural = '发布资源申请'
-
-
-# class Auction(models.Model):
-
-#     '''
-#     转让资源发起竞拍
-#     '''
-
-#     start_au = models.ForeignKey(
-#         Author, related_name="start_au", on_delete=models.CASCADE)
-#     #title = models.CharField(max_length=255, blank=True)
-#     #participants = models.ManyToManyField(Author, related_name="participants", blank=True)
-#     resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
-#     started_time = models.DateTimeField()
-#     period = models.IntegerField(default=3600)  # 以秒为单位记录持续时间
-#     price = models.IntegerField(default=0)
-#     candidate = models.ForeignKey(
-#         Author, related_name="candidate", on_delete=models.CASCADE, blank=True, null=True)
-
-#     def __str__(self):
-#         return self.resource.title
-
-#     class Meta:
-#         verbose_name_plural = '竞拍信息'
-
 
 class RechargeCard(models.Model):
     '''
@@ -425,3 +277,10 @@ class Message(models.Model):
 
     class Meta:
         verbose_name_plural = '消息'
+
+class interested(models.Model):    
+    patent_id=models.CharField(max_length=256)
+    send_user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="send_user")
+    receive_user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="receive_user")
+    message=models.CharField(max_length=256)
+    status=models.BooleanField(default=False)

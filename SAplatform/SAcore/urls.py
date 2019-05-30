@@ -23,5 +23,6 @@ urlpatterns = [
     path('recharge/', views.RechargeView.as_view()),
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
     path('CoGraph/',views.CoGraphView.as_view()),
+    path('interested/',views.InterestedView.as_view())
 
 ]

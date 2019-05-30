@@ -135,22 +135,38 @@ class AuthorView(APIView):
         user=request.user
         data = request.data
         attach_file = request.FILES['file']
-        r=Paper(name=data['name'],
-                abstract=data['abstract'],
-                keywords=data['keywords'],                
-                price=data['price'],).save()
-        r.author1.connect(Author.nodes.get(uid=user.uid))
+        t=data["type"]
         authors_text = data['authors']
         authors_names = authors_text.split(',')
         au_list=[]        
-        for name in authors_names:            
-            au = Author.nodes.get_or_none(name=name)
-            if au is None:
-                au=Author(name=name).save()            
-            au_list.append(au)
-            r.authors.connect(au)
-            au.publishes.connect(r)
-            au.save()
+        if t=="P1":
+            r=Paper(name=data['name'],
+                    abstract=data['abstract'],
+                    keywords=data['keywords'],                
+                    price=data['price'],).save()
+            r.author1.connect(Author.nodes.get(uid=user.uid))
+            for name in authors_names:            
+                au = Author.nodes.get_or_none(name=name)
+                if au is None:
+                    au=Author(name=name).save()            
+                au_list.append(au)
+                r.authors.connect(au)
+                au.publishes.connect(r)
+                au.save()
+            Resource.objects.create(Type="P1",name=r.name,files=attach_file,uid=r.uid).save()
+        elif t=="P2":
+            r=Patent(name=data['name'],
+                    patent_id=data['patent_id'],
+                    applicant_date=['applicant_date']).save()
+            for name in authors_names:
+                au = Author.nodes.get_or_none(name=name)
+                if au is None:
+                    au=Author(name=name).save()            
+                au_list.append(au)
+                r.inventor.connect(au)
+                au.invent.connect(r)
+                au.save()
+            Resource.objects.create(Type="P2",name=r.name,files=attach_file,uid=r.uid).save()
         r.resource_url="static/files/"+attach_file.name
         r.save()            
         for i in range(len(au_list)):
@@ -159,8 +175,7 @@ class AuthorView(APIView):
                 if au1!=au:
                     au.coworkers.connect(au1)
                     au.save()
-        Resource.objects.create(Type="P1",name=r.name,files=attach_file,uid=r.uid).save()        
-        return JsonResponse({'msg': "上传成功"})
+                return JsonResponse({'msg': "上传成功"})
 
 
 class RegisterView(APIView):
@@ -466,7 +481,7 @@ class RechargeView(APIView):
     permission_classes = (IsAuthenticated,)
 
     # 充值
-    def post(sefl, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         user = request.user
         key = request.data['key']
         card = RechargeCard.objects.filter(token=key).first()
@@ -480,7 +495,7 @@ class RechargeView(APIView):
         return JsonResponse({'msg': "充值成功"}, status=200)
 
 class CoGraphView(APIView):
-    def post(sefl, request, *args, **kwargs):        
+    def post(self, request, *args, **kwargs):        
         uid=request.data['uid']
         base=Author.nodes.get(uid=uid)        
         user_set=set((uid,))
@@ -539,3 +554,63 @@ class CoGraphView(APIView):
         res["nodes"]=nodes
         res["links"]=links
         return JsonResponse(res)
+
+class InterestedView(APIView):
+    permission_classes=(IsAuthenticated)
+
+    def post(self, request, *args, **kwargs):
+        send_user=request.user
+        pid=request.data["pid"]
+        message=request.data["message"]
+        patent=Patent.nodes.get(uid=pid)
+        flag=True
+        for inv in patent.inventor.all():
+            try:
+                rec=User.objects.get(uid=inv.uid)
+                interested.objects.create(patent_id=pid,send_user=send_user,message=message,receive_user=rec)
+                flag=False
+            except User.DoesNotExists:
+                continue
+        if flag:
+            return JsonResponse({"msg":"很抱歉此专利发明者尚未在本站认证"},status=400)
+        else:
+            return JsonResponse({"msg":"消息发送成功！"},status=200)
+    def get(self, request, *args, **kwargs):
+        user=request.user
+        ret={}
+        result=[]
+        if user.Type=="U":
+            in_list=interested.objects.filter(send_user=user)            
+            for ins in in_list:
+                in_se={}
+                in_se["send_user"]=user
+                in_se["patent_id"]=ins.patent_id
+                in_se["receive_user"]=ins.receive_user
+                in_se["message"]=ins.message
+                in_se["status"]=ins.status
+                in_se["message_id"]=ins.id
+                result.append(in_se)
+            ret["result"]=result
+        elif user.Type=="E":
+            in_list=interested.objects.filter(receive_user=user)
+            for ins in in_list:
+                in_se={}
+                in_se["send_user"]=ins.send_user
+                in_se["patent_id"]=ins.patent_id
+                in_se["receive_user"]=user
+                in_se["message"]=ins.message
+                in_se["status"]=ins.status
+                in_se["message_id"]=ins.id
+                result.append(in_se)
+            ret["result"]=result
+        return JsonResponse(ret)
+
+    def put(self, request, *args, **kwargs):
+        id=request.data["id"]
+        try:
+            ins=interested.objects.get(pk=id)
+            ins.status=True
+            ins.save()
+        except interested.DoesNotExists:
+            return JsonResponse({"msg":"此信息不存在"})
+        return JsonResponse({"msg":"此信息已读"})
