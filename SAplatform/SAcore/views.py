@@ -157,7 +157,7 @@ class AuthorView(APIView):
         elif t=="P2":
             r=Patent(name=data['name'],
                     patent_id=data['patent_id'],
-                    applicant_date=['applicant_date']).save()
+                    applicant_date=data['applicant_date']).save()
             for name in authors_names:
                 au = Author.nodes.get_or_none(name=name)
                 if au is None:
@@ -556,8 +556,8 @@ class CoGraphView(APIView):
         return JsonResponse(res)
 
 class InterestedView(APIView):
-    permission_classes=(IsAuthenticated)
-
+    
+    @permission_classes(IsAuthenticated,)
     def post(self, request, *args, **kwargs):
         send_user=request.user
         pid=request.data["pid"]
@@ -569,12 +569,14 @@ class InterestedView(APIView):
                 rec=User.objects.get(uid=inv.uid)
                 interested.objects.create(patent_id=pid,send_user=send_user,message=message,receive_user=rec)
                 flag=False
-            except User.DoesNotExists:
+            except User.DoesNotExist:
                 continue
         if flag:
             return JsonResponse({"msg":"很抱歉此专利发明者尚未在本站认证"},status=400)
         else:
             return JsonResponse({"msg":"消息发送成功！"},status=200)
+    
+    @permission_classes(IsAuthenticated,)
     def get(self, request, *args, **kwargs):
         user=request.user
         ret={}
@@ -583,9 +585,9 @@ class InterestedView(APIView):
             in_list=interested.objects.filter(send_user=user)            
             for ins in in_list:
                 in_se={}
-                in_se["send_user"]=user
+                in_se["send_user"]=user.username
                 in_se["patent_id"]=ins.patent_id
-                in_se["receive_user"]=ins.receive_user
+                in_se["receive_user"]=Author.nodes.get(uid=ins.receive_user.uid).name
                 in_se["message"]=ins.message
                 in_se["status"]=ins.status
                 in_se["message_id"]=ins.id
@@ -595,9 +597,9 @@ class InterestedView(APIView):
             in_list=interested.objects.filter(receive_user=user)
             for ins in in_list:
                 in_se={}
-                in_se["send_user"]=ins.send_user
+                in_se["send_user"]=ins.send_user.username
                 in_se["patent_id"]=ins.patent_id
-                in_se["receive_user"]=user
+                in_se["receive_user"]=Author.nodes.get(uid=user.uid).name
                 in_se["message"]=ins.message
                 in_se["status"]=ins.status
                 in_se["message_id"]=ins.id

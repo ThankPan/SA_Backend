@@ -150,6 +150,7 @@ class Author(StructuredNode):
             "coworkers":co_list,
             "domains":do_list,
             "owns":own_list,
+            "patent":pa_list,
         }
     @property
     def simple_serialize(self):

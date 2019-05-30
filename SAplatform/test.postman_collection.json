@@ -19,7 +19,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"data\":{\"username\":\"ThankPan\", \"password\":\"123456\"}}"
+					"raw": "{\"data\":{\"username\":\"test user\", \"password\":\"123456\"}}"
 				},
 				"url": {
 					"raw": "http://127.0.0.1:8000/api/register/",
@@ -115,7 +115,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"username\":\"ThankPan\", \"password\":\"123456\"}"
+					"raw": "{\"username\":\"test user\", \"password\":\"123456\"}"
 				},
 				"url": {
 					"raw": "http://127.0.0.1:8000/api/api-token-auth/",
@@ -564,7 +564,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\"field\":\"Author\",\"content\":\"Test Author\",\"type\":\"P1\"}"
+					"raw": "{\"field\":\"Author\",\"content\":\"徐惠彬\",\"type\":\"P2\"}"
 				},
 				"url": {
 					"raw": "http://127.0.0.1:8000/api/search/",
@@ -764,7 +764,7 @@
 			"response": []
 		},
 		{
-			"name": "upload_file",
+			"name": "upload_file_paper",
 			"request": {
 				"method": "PUT",
 				"header": [
@@ -811,6 +811,11 @@
 							"key": "authors",
 							"value": "Test Author",
 							"type": "text"
+						},
+						{
+							"key": "type",
+							"value": "P1",
+							"type": "text"
 						}
 					]
 				},
@@ -827,6 +832,233 @@
 					"path": [
 						"api",
 						"au_profile",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "upload_file_patent",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Token f3948e584fd6b89e127d347a72ed457f1bc5e17d"
+					},
+					{
+						"key": "enctype",
+						"type": "text",
+						"value": "multipart/form-data"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/home/jason/Downloads/电子束物理气相沉积热障涂层的研究_徐惠彬.caj"
+						},
+						{
+							"key": "name",
+							"value": "Test Upload Patent",
+							"type": "text"
+						},
+						{
+							"key": "abstract",
+							"value": "abstract",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "keywords",
+							"value": "test",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "price",
+							"value": "10",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "authors",
+							"value": "Test Author,徐惠彬",
+							"type": "text"
+						},
+						{
+							"key": "type",
+							"value": "P2",
+							"type": "text"
+						},
+						{
+							"key": "patent_id",
+							"value": "CN1012398446",
+							"type": "text"
+						},
+						{
+							"key": "applicant_date",
+							"value": "2008-08-13",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/au_profile/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"au_profile",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "send_interested",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token aa0d0058e307ac9d00d1b9a39fd8444180d86312",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "pid",
+							"value": "3058fb01124a428b96957849d9577a74",
+							"type": "text"
+						},
+						{
+							"key": "message",
+							"value": "您好，我想购买此专利使用",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/interested/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"interested",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user_get_interested",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token aa0d0058e307ac9d00d1b9a39fd8444180d86312",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/interested/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"interested",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "author_get_interested",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Token f3948e584fd6b89e127d347a72ed457f1bc5e17d"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/interested/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"interested",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "change_interested_status",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "id",
+							"value": "1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/interested/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"interested",
 						""
 					]
 				}
