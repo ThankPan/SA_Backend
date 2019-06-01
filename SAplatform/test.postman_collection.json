@@ -972,14 +972,59 @@
 			"response": []
 		},
 		{
-			"name": "user_get_interested",
+			"name": "send_reply",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Token f3948e584fd6b89e127d347a72ed457f1bc5e17d"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "id",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "message",
+							"value": "收到，之后将与您联系",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/reply/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"reply",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "发送的消息——普通用户",
 			"request": {
 				"method": "GET",
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Token aa0d0058e307ac9d00d1b9a39fd8444180d86312",
-						"type": "text"
+						"type": "text",
+						"value": "Token aa0d0058e307ac9d00d1b9a39fd8444180d86312"
 					}
 				],
 				"url": {
@@ -1002,7 +1047,37 @@
 			"response": []
 		},
 		{
-			"name": "author_get_interested",
+			"name": "收到的消息——普通用户",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Token aa0d0058e307ac9d00d1b9a39fd8444180d86312"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/reply/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"reply",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "发送的消息——专家用户",
 			"request": {
 				"method": "GET",
 				"header": [
@@ -1025,6 +1100,36 @@
 					"path": [
 						"api",
 						"interested",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "收到的消息——专家用户",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Token f3948e584fd6b89e127d347a72ed457f1bc5e17d"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/reply/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"reply",
 						""
 					]
 				}

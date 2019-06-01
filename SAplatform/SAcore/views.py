@@ -348,7 +348,7 @@ class StarView(APIView):
             if p.Type=="P1":
                 star.append(Paper.nodes.get(uid=p.uid).simple_serialize)
             else:
-                star.append(Patent.nodes.get(uid=p.uid).simple_serialize)
+                star.append(Patent.nodes.get(uid=p.uid).serialize)
         result['star']=star 
         return JsonResponse(result)
 
@@ -572,7 +572,7 @@ class InterestedView(APIView):
             except User.DoesNotExist:
                 continue
         if flag:
-            return JsonResponse({"msg":"很抱歉此专利发明者尚未在本站认证"},status=400)
+            return JsonResponse({"msg":"很抱歉此专利发明者尚未在本站认证"})
         else:
             return JsonResponse({"msg":"消息发送成功！"},status=200)
     
@@ -580,31 +580,20 @@ class InterestedView(APIView):
     def get(self, request, *args, **kwargs):
         user=request.user
         ret={}
-        result=[]
-        if user.Type=="U":
-            in_list=interested.objects.filter(send_user=user)            
-            for ins in in_list:
-                in_se={}
-                in_se["send_user"]=user.username
-                in_se["patent_id"]=ins.patent_id
+        result=[]        
+        in_list=interested.objects.filter(send_user=user)
+        for ins in in_list:
+            in_se={}
+            in_se["patent_id"]=ins.patent_id
+            if user.Type=="U":
                 in_se["receive_user"]=Author.nodes.get(uid=ins.receive_user.uid).name
-                in_se["message"]=ins.message
-                in_se["status"]=ins.status
-                in_se["message_id"]=ins.id
-                result.append(in_se)
-            ret["result"]=result
-        elif user.Type=="E":
-            in_list=interested.objects.filter(receive_user=user)
-            for ins in in_list:
-                in_se={}
-                in_se["send_user"]=ins.send_user.username
-                in_se["patent_id"]=ins.patent_id
-                in_se["receive_user"]=Author.nodes.get(uid=user.uid).name
-                in_se["message"]=ins.message
-                in_se["status"]=ins.status
-                in_se["message_id"]=ins.id
-                result.append(in_se)
-            ret["result"]=result
+            elif user.Type=="E":
+                in_se["receive_user"]=ins.receive_user.username
+            in_se["message"]=ins.message
+            in_se["status"]=ins.status
+            in_se["message_id"]=ins.id
+            result.append(in_se)            
+        ret["result"]=result
         return JsonResponse(ret)
 
     def put(self, request, *args, **kwargs):
@@ -616,3 +605,34 @@ class InterestedView(APIView):
         except interested.DoesNotExists:
             return JsonResponse({"msg":"此信息不存在"})
         return JsonResponse({"msg":"此信息已读"})
+
+class ReplyView(APIView):
+    @permission_classes(IsAuthenticated)
+    def post(self, request, *args, **kwargs):
+        send_user=request.user
+        reply_message=interested.objects.get(pk=request.data['id'])
+        interested.objects.create(patent_id=reply_message.patent_id,send_user=send_user,receive_user=reply_message.send_user,message=request.data['message'])
+        return JsonResponse({"msg":"消息回复成功！"})
+
+    @permission_classes(IsAuthenticated)
+    def get(self, request, *args, **kwargs):
+        receive_user=request.user
+        ret={}
+        result=[]        
+        in_list=interested.objects.filter(receive_user=receive_user)
+        
+        for ins in in_list:
+            in_se={}
+            in_se["patent_id"]=ins.patent_id
+            in_se["message"]=ins.message
+            in_se["status"]=ins.status
+            in_se["message_id"]=ins.id
+            if receive_user.Type=="E":
+                in_se["send_user"]=ins.send_user.username
+            elif receive_user.Type=="U":
+                in_se["send_user"]=Author.nodes.get(uid=ins.send_user.uid).name
+            result.append(in_se)
+        ret["result"]=result
+        return JsonResponse(ret)
+
+
