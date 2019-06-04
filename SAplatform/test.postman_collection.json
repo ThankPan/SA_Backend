@@ -1,0 +1,1174 @@
+{
+	"info": {
+		"_postman_id": "8db9225d-8f92-47ab-be47-9456e8afae8f",
+		"name": "test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "register",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"data\":{\"username\":\"test user\", \"password\":\"123456\"}}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/register/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"register",
+						""
+					]
+				},
+				"description": "第一次注册时成功，第二次注册同一账号会提示用户名已被注册"
+			},
+			"response": []
+		},
+		{
+			"name": "get_profile",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token f3948e584fd6b89e127d347a72ed457f1bc5e17d",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/profile/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"profile",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_profile_fail",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 203fefe9175738a5253a76d2d0c3525cbc90c7b",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/profile/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"profile",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_token_success",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\":\"test user\", \"password\":\"123456\"}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/api-token-auth/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"api-token-auth",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_token_success_fail",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\":\"test\", \"password\":\"test1\"}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/api-token-auth/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"api-token-auth",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "star_create_success",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Token f3948e584fd6b89e127d347a72ed457f1bc5e17d",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"data\": {\n        \"item_list\": \"0eeb1d09-c7d4-4ee0-b965-ceaed396b9d7,ba848e02-267b-4459-9cea-eaaaab423f82\",\n        \"type_list\": \"P1,P1\"\n    }\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/star/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"star",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "star_delete_success",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token f3948e584fd6b89e127d347a72ed457f1bc5e17d",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"data\":{\"item_list\":\"ba848e02-267b-4459-9cea-eaaaab423f82\"}}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/star/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"star",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "star_delete_fail",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Token 203fefe9175738a5253a76d2d0c3525cbc90c7b6",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"data\":{\"item_list\":\"44\"}}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/star/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"star",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "star_create_fail",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Token 203fefe9175738a5253a76d2d0c3525cbc90c7b6",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"data\":{\"item_list\":\"Test Paper\"}}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/star/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"star",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "star_get",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token f3948e584fd6b89e127d347a72ed457f1bc5e17d",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/star/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"star",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "专家认证",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token f3948e584fd6b89e127d347a72ed457f1bc5e17d",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"uid\":\"9ad2f73dade246d4aaf68193d5ad5acd\"}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/profile/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"profile",
+						""
+					]
+				},
+				"description": "申请成为专家"
+			},
+			"response": []
+		},
+		{
+			"name": "邮箱验证码认证",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"data\":{\"email\":\"liuxinghang46@buaa.edu.cn\",\"token\":\"56q-bb7f5ed7a443210fb1b1\",\"username\":\"ThankPan\"}}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/verify/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"verify",
+						""
+					]
+				},
+				"description": "申请成功后用户类型修改为'E'"
+			},
+			"response": []
+		},
+		{
+			"name": "detail_not_login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"Type\":\"P1\",\"uid\":\"0eeb1d09-c7d4-4ee0-b965-ceaed396b9d7\"}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/detail/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"detail",
+						""
+					]
+				},
+				"description": "未登录用户访问时的返回，无收藏与购买状态"
+			},
+			"response": []
+		},
+		{
+			"name": "detail_login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Token 203fefe9175738a5253a76d2d0c3525cbc90c7b6",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"Type\":\"P1\",\"uid\":\"bd1cfc6a-8afe-4713-9118-bc68f8fb0b9b\"}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/detail/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"detail",
+						""
+					]
+				},
+				"description": "登录用户访问时的返回，有收藏与购买状态"
+			},
+			"response": []
+		},
+		{
+			"name": "search_title",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"field\":\"Title\",\"content\":\"t\",\"type\":\"P1\"}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/search/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"search",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "search_author",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"field\":\"Author\",\"content\":\"徐惠彬\",\"type\":\"P2\"}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/search/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"search",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "advance_search",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"t\",\n    \"author\": \"B\",\n    \"type\": \"P2\",\n    \"time_low\": \"\",\n    \"time_high\":\"\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/advsearch/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"advsearch",
+						""
+					]
+				},
+				"description": "title为标题，author为作者，type为类型，P1为论文，P2为专利，keyword为关键字，time_low为发表时间下届，time_high为发表时间上届，除了类型均可以为空，但是必须要有字段，像示例里那样"
+			},
+			"response": []
+		},
+		{
+			"name": "CoGraph",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"uid\": \"da711cbc-13c3-4d29-ae08-1947c93ed034\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/CoGraph/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"CoGraph",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Author_detail",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/au_profile/?uid=da711cbc-13c3-4d29-ae08-1947c93ed034",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"au_profile",
+						""
+					],
+					"query": [
+						{
+							"key": "uid",
+							"value": "da711cbc-13c3-4d29-ae08-1947c93ed034"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "avator_post",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token f3948e584fd6b89e127d347a72ed457f1bc5e17d",
+						"type": "text"
+					},
+					{
+						"key": "enctype",
+						"value": "multipart/form-data",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "avator",
+							"type": "file",
+							"src": "/home/jason/Desktop/icon1.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/avator/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"avator",
+						""
+					]
+				},
+				"description": "上传头像"
+			},
+			"response": []
+		},
+		{
+			"name": "avator_get",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/avator/?uid=9ad2f73dade246d4aaf68193d5ad5acd",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"avator",
+						""
+					],
+					"query": [
+						{
+							"key": "uid",
+							"value": "9ad2f73dade246d4aaf68193d5ad5acd"
+						}
+					]
+				},
+				"description": "上传头像"
+			},
+			"response": []
+		},
+		{
+			"name": "upload_file_paper",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token f3948e584fd6b89e127d347a72ed457f1bc5e17d",
+						"type": "text"
+					},
+					{
+						"key": "enctype",
+						"value": "multipart/form-data",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/home/jason/Downloads/24A008 页面链接.txt"
+						},
+						{
+							"key": "name",
+							"value": "Test Upload Paper 5",
+							"type": "text"
+						},
+						{
+							"key": "abstract",
+							"value": "abstract",
+							"type": "text"
+						},
+						{
+							"key": "keywords",
+							"value": "test",
+							"type": "text"
+						},
+						{
+							"key": "price",
+							"value": "10",
+							"type": "text"
+						},
+						{
+							"key": "authors",
+							"value": "Test Author",
+							"type": "text"
+						},
+						{
+							"key": "type",
+							"value": "P1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/au_profile/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"au_profile",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "upload_file_patent",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Token f3948e584fd6b89e127d347a72ed457f1bc5e17d"
+					},
+					{
+						"key": "enctype",
+						"type": "text",
+						"value": "multipart/form-data"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/home/jason/Downloads/电子束物理气相沉积热障涂层的研究_徐惠彬.caj"
+						},
+						{
+							"key": "name",
+							"value": "Test Upload Patent",
+							"type": "text"
+						},
+						{
+							"key": "abstract",
+							"value": "abstract",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "keywords",
+							"value": "test",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "price",
+							"value": "10",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "authors",
+							"value": "Test Author,徐惠彬",
+							"type": "text"
+						},
+						{
+							"key": "type",
+							"value": "P2",
+							"type": "text"
+						},
+						{
+							"key": "patent_id",
+							"value": "CN1012398446",
+							"type": "text"
+						},
+						{
+							"key": "applicant_date",
+							"value": "2008-08-13",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/au_profile/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"au_profile",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "send_interested",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token aa0d0058e307ac9d00d1b9a39fd8444180d86312",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "pid",
+							"value": "3058fb01124a428b96957849d9577a74",
+							"type": "text"
+						},
+						{
+							"key": "message",
+							"value": "您好，我想购买此专利使用",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/interested/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"interested",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "send_reply",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Token f3948e584fd6b89e127d347a72ed457f1bc5e17d"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "id",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "message",
+							"value": "收到，之后将与您联系",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/reply/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"reply",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "发送的消息——普通用户",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Token aa0d0058e307ac9d00d1b9a39fd8444180d86312"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/interested/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"interested",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "收到的消息——普通用户",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Token aa0d0058e307ac9d00d1b9a39fd8444180d86312"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/reply/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"reply",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "发送的消息——专家用户",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Token f3948e584fd6b89e127d347a72ed457f1bc5e17d"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/interested/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"interested",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "收到的消息——专家用户",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Token f3948e584fd6b89e127d347a72ed457f1bc5e17d"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/reply/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"reply",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "change_interested_status",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "id",
+							"value": "1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/interested/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"interested",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

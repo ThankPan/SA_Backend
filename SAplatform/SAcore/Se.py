@@ -4,23 +4,23 @@ from .models import *
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'Type', 'avator', 'balance', 'email', 'telephone')
+        fields = ('id', 'username', 'Type',  'balance', 'avator')
 
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'password', 'Type', 'email', 'telephone')
+        fields = ('id', 'username', 'password', 'Type', )
 
 
-class AuthorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Author
-        fields = ('id', 'name', 'instituition', 'domain', 'citation_num', 'article_num', 'h_index', 'g_index', 'avator')
+# class AuthorSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Author
+#         fields = ('id', 'name', 'instituition', 'domain', 'citation_num', 'article_num', 'h_index', 'g_index', 'avator')
 
 class ResourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Resource
-        fields = ('id', 'title', 'intro', 'price', 'Type')
+        fields = ('Type','name','files','uid')
 
 class UserAvatorSerializer(serializers.ModelSerializer):
     class Meta:
@@ -29,13 +29,13 @@ class UserAvatorSerializer(serializers.ModelSerializer):
 
 class AuthorAvatorSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Author
-        fields = ('avator',)
+        model = Avator
+        fields = ('uid','avator')
 
-class AuctionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Auction
-        fields = ('id', 'title', 'started_time', 'price', 'period')
+# class AuctionSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Auction
+#         fields = ('id', 'title', 'started_time', 'price', 'period')
 
 
         
