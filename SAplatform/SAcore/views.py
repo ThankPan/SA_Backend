@@ -81,8 +81,11 @@ class VerifyView(APIView):
         data=request.data['data']
         email=data['email']
         token=data['token']
-        username=data['username']        
-        at=AuthorToken.objects.get(email=email)
+        username=data['username']
+        try:
+            at=AuthorToken.objects.get(email=email)
+        except AuthorToken.MultipleObjectsReturned:
+            return JsonResponse({"msg":"此专家已在本网站上认证过"})
         au=Author.nodes.get(email=email)
         if token == at.token:
             u=User.objects.get(username=username)
@@ -563,11 +566,12 @@ class InterestedView(APIView):
         pid=request.data["pid"]
         message=request.data["message"]
         patent=Patent.nodes.get(uid=pid)
+        name=patent.name
         flag=True
         for inv in patent.inventor.all():
             try:
                 rec=User.objects.get(uid=inv.uid)
-                interested.objects.create(patent_id=pid,send_user=send_user,message=message,receive_user=rec)
+                interested.objects.create(patent_id=pid,send_user=send_user,message=message,receive_user=rec,patent_title=name)
                 flag=False
             except User.DoesNotExist:
                 continue
@@ -585,6 +589,7 @@ class InterestedView(APIView):
         for ins in in_list:
             in_se={}
             in_se["patent_id"]=ins.patent_id
+            in_se["patent_title"]=ins.patent_title
             if user.Type=="U":
                 in_se["receive_user"]=Author.nodes.get(uid=ins.receive_user.uid).name
             elif user.Type=="E":
@@ -611,7 +616,7 @@ class ReplyView(APIView):
     def post(self, request, *args, **kwargs):
         send_user=request.user
         reply_message=interested.objects.get(pk=request.data['id'])
-        interested.objects.create(patent_id=reply_message.patent_id,send_user=send_user,receive_user=reply_message.send_user,message=request.data['message'])
+        interested.objects.create(patent_id=reply_message.patent_id,send_user=send_user,receive_user=reply_message.send_user,message=request.data['message'],patent_title=reply_message.patent_title)
         return JsonResponse({"msg":"消息回复成功！"})
 
     @permission_classes(IsAuthenticated)
@@ -624,6 +629,7 @@ class ReplyView(APIView):
         for ins in in_list:
             in_se={}
             in_se["patent_id"]=ins.patent_id
+            in_se["patent_title"]=ins.patent_title
             in_se["message"]=ins.message
             in_se["status"]=ins.status
             in_se["message_id"]=ins.id

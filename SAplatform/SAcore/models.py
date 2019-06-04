@@ -285,3 +285,4 @@ class interested(models.Model):
     receive_user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="receive_user")
     message=models.CharField(max_length=256)
     status=models.BooleanField(default=False)
+    patent_title=models.CharField(max_length=256,blank=True)
